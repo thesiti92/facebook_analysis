@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import json, time
 from datetime import datetime
+
 soup = BeautifulSoup(open("messages.html", encoding="utf8"), 'lxml').body.contents[1]
 
 def getTime(string_time):
