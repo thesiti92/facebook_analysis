@@ -11,13 +11,14 @@ import sys
 import numpy as np
 import six
 import json
+
 import chainer
 from chainer import cuda
 import chainer.functions as F
 import chainer.links as L
 from chainer import serializers
 
-import train_country_bot
+import train_ptb
 
 
 def main():
@@ -40,6 +41,7 @@ def main():
     args = parser.parse_args()
 
     np.random.seed(args.seed)
+    chainer.config.train = False
 
     xp = cuda.cupy if args.gpu >= 0 else np
 
@@ -52,13 +54,13 @@ def main():
     # should be same as n_units , described in train_ptb.py
     n_units = args.unit
 
-    lm = train_country_bot.RNNForLM(len(vocab), n_units, train=False)
+    lm = train_ptb.RNNForLM(len(vocab), n_units)
     model = L.Classifier(lm)
 
     serializers.load_npz(args.model, model)
 
     if args.gpu >= 0:
-        cuda.get_device(args.gpu).use()
+        cuda.get_device_from_id(args.gpu).use()
         model.to_gpu()
 
     model.predictor.reset_state()
